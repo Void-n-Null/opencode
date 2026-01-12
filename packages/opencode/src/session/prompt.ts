@@ -1572,7 +1572,12 @@ export namespace SessionPrompt {
               prompt: templateParts.find((y) => y.type === "text")?.text ?? "",
             },
           ]
-        : [...templateParts, ...(input.parts ?? [])]
+        : [
+            // Mark template parts as synthetic so they're sent to the model but not displayed in UI
+            ...templateParts.map((p) => ({ ...p, synthetic: true })),
+            // User's actual input is displayed
+            ...(input.parts ?? []),
+          ]
 
     const result = (await prompt({
       sessionID: input.sessionID,
